@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   sync:
     docker:
-      - image: cimg/base:2020.01
+      - image: cimg/python:3.7
     steps:
       - checkout
       - run:
