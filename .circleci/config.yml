@@ -2,9 +2,7 @@
 version: 2.1
 # Use a package of configuration called an orb.
 jobs:
-  # Declare a dependency on the welcome-orb
-
-  publish-gh:
+  sync:
     docker:
       - image: cimg/base:2020.01
     steps:
@@ -20,3 +18,8 @@ jobs:
           name: Install HUB CLI
           command: |
             curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+
+workflows:
+  sync:
+    jobs:
+      - sync
