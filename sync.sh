@@ -94,7 +94,7 @@ do
         fi                
 
         # Update any files in enforce
-        rsync -avh --include ".*" –ignore-existing ../../seed/ .
+        rsync -avh --include ".*" -–ignore-existing ../../seed/ .
         rsync -avh --include ".*" ../../enforce/ .
         git config  user.email "addonfactory@splunk.com"
         git config  user.name "Addon Factory template"
