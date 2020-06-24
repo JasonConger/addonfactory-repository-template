@@ -23,6 +23,9 @@ jobs:
             echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
             brew install hub
       - run:
+          name: setup python
+          command: pip install git+https://github.com/pixelb/crudini.git
+      - run:
           name: Apply Configuration policy
           command: |
             test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
