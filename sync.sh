@@ -86,7 +86,7 @@ do
         echo Repository is existing
         if [ ! -d "$REPO" ]; then
             #hub clone $REPOORG/$REPO work/$REPO
-            git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$REPOORG/$REPO.git
+            git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$REPOORG/$REPO.git work/$REPO
             pushd work/$REPO
             git checkout develop
         else
