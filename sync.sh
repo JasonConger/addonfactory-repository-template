@@ -1,5 +1,5 @@
 #!/bin/bash
-$REPOORG=splunk
+REPOORG=splunk
 if [[  $GITHUB_USER && ${GITHUB_USER-x} ]]
 then
     echo "GITHUB_USER Found" 
@@ -31,13 +31,13 @@ command -v jq >/dev/null 2>&1 || { echo >&2 "I require jq but it's not installed
 while IFS=, read -r REPO TAID REPOVISIBILITY TITLE OTHER
 do
     echo "Woring on:$REPO|$TAID|$REPOVISIBILITY|$TITLE|$OTHER"
-    if ! gh repo view -R splunk/${REPO} >/dev/null
+    if ! gh repo view -R $REPOORG/${REPO} >/dev/null
     then
         rm -rf work/$REPO
         echo Repository is new    
         mkdir -p work/$REPO || true
-        cp -r seed/ work/$REPO
-        cp -rf enforce/ work/$REPO
+        cp -vr seed/ work/$REPO
+        cp -vrf enforce/ work/$REPO
         pushd work/$REPO
         
         crudini --set package/default/app.conf launcher description "$TITLE"
@@ -57,31 +57,32 @@ do
         git init
         git config  user.email "addonfactory@splunk.com"
         git config  user.name "Addon Factory template"
-        git submodule add git@github.com:splunk/addonfactory_test_matrix_splunk.git deps/build/addonfactory_test_matrix_splunk
-        git submodule add git@github.com:splunk/addonfactory-splunk_sa_cim.git deps/apps/Splunk_SA_CIM
-        git submodule add git@github.com:splunk/addonfactory-splunk_env_indexer.git deps/apps/splunk_env_indexer
+        git submodule add git@github.com:$REPOORG/addonfactory_test_matrix_splunk.git deps/build/addonfactory_test_matrix_splunk
+        git submodule add git@github.com:$REPOORG/addonfactory-splunk_sa_cim.git deps/apps/Splunk_SA_CIM
+        git submodule add git@github.com:$REPOORG/addonfactory-splunk_env_indexer.git deps/apps/splunk_env_indexer
 
         git add .
         git commit -am "base"
         git tag -a v0.1.0 -m "CI base"        
 
-        hub create -p splunk/$REPO
-        hub api orgs/splunk/teams/products-shared-services-all/repos/splunk/$REPO --raw-field 'permission=maintain' -X PUT 
-        hub api orgs/splunk/teams/productsecurity/repos/splunk/$REPO --raw-field 'permission=read' -X PUT 
+        hub create -p $REPOORG/$REPO
+        hub api orgs/$REPOORG/teams/products-shared-services-all/repos/$REPOORG/$REPO --raw-field 'permission=maintain' -X PUT 
+        hub api orgs/$REPOORG/teams/productsecurity/repos/$REPOORG/$REPO --raw-field 'permission=read' -X PUT 
 
-        curl -X POST https://circleci.com/api/v1.1/project/github/splunk/$REPO/follow?circle-token=${CIRCLECI_TOKEN}
-        curl -X POST --header "Content-Type: application/json" -d '{"type":"github-user-key"}' https://circleci.com/api/v1.1/project/github/splunk/$REPO/checkout-key?circle-token=${CIRCLECI_TOKEN}
-        curl -X POST --header "Content-Type: application/json" -d "{\"name\":\"GH_USER\", \"value\":\"${GITHUB_USER}\"}" https://circleci.com/api/v1.1/project/github/splunk/$REPO/envvar?circle-token=${CIRCLECI_TOKEN}
-        curl -X POST --header "Content-Type: application/json" -d "{\"name\":\"GITHUB_TOKEN\", \"value\":\"${GITHUB_TOKEN}\"}" https://circleci.com/api/v1.1/project/github/splunk/$REPO/envvar?circle-token=${CIRCLECI_TOKEN}
+        curl -X POST https://circleci.com/api/v1.1/project/github/$REPOORG/$REPO/follow?circle-token=${CIRCLECI_TOKEN}
+        curl -X POST --header "Content-Type: application/json" -d '{"type":"github-user-key"}' https://circleci.com/api/v1.1/project/github/$REPOORG/$REPO/checkout-key?circle-token=${CIRCLECI_TOKEN}
+        curl -X POST --header "Content-Type: application/json" -d "{\"name\":\"GH_USER\", \"value\":\"${GITHUB_USER}\"}" https://circleci.com/api/v1.1/project/github/$REPOORG/$REPO/envvar?circle-token=${CIRCLECI_TOKEN}
+        curl -X POST --header "Content-Type: application/json" -d "{\"name\":\"GITHUB_TOKEN\", \"value\":\"${GITHUB_TOKEN}\"}" https://circleci.com/api/v1.1/project/github/$REPOORG/$REPO/envvar?circle-token=${CIRCLECI_TOKEN}
 
-        git remote set-url origin https://$GITHUB_USER:$GITHUB_TOKEN@github.com/splunk/$REPO.git
+        git remote set-url origin https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$REPOORG/$REPO.git
         git push --set-upstream origin master
         git tag -a v$(crudini --get package/default/app.conf launcher version) -m "Release"
         git push --follow-tags
         git checkout -b develop
         git push --set-upstream origin develop
-
+        
     else
         echo Repository is existing
     fi
+    popd
 done < repositories.csv
