@@ -22,6 +22,11 @@ else
     exit 1
 fi
 
+command -v hub >/dev/null 2>&1 || { echo >&2 "I require hub but it's not installed.  Aborting."; exit 1; }
+command -v gh >/dev/null 2>&1 || { echo >&2 "I require gh but it's not installed.  Aborting."; exit 1; }
+command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
+command -v crudini >/dev/null 2>&1 || { echo >&2 "I require crudini but it's not installed.  Aborting."; exit 1; }
+command -v jq >/dev/null 2>&1 || { echo >&2 "I require jq but it's not installed.  Aborting."; exit 1; }
 
 while IFS=, read -r REPO TAID REPOVISIBILITY TITLE OTHER
 do
@@ -50,6 +55,8 @@ do
         mv -f $tmpf package/app.manifest
 
         git init
+        git config  user.email "addonfactory@splunk.com"
+        git config  user.name "Addon Factory template"
         git submodule add git@github.com:splunk/addonfactory_test_matrix_splunk.git deps/build/addonfactory_test_matrix_splunk
         git submodule add git@github.com:splunk/addonfactory-splunk_sa_cim.git deps/apps/Splunk_SA_CIM
         git submodule add git@github.com:splunk/addonfactory-splunk_env_indexer.git deps/apps/splunk_env_indexer
