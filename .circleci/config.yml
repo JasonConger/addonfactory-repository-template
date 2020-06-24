@@ -35,6 +35,11 @@ jobs:
             ./sync.sh
 
 workflows:
-  sync:
+  sync:      
     jobs:
-      - sync
+      - approval-run:
+          type: approval
+      - sync:
+          requires:
+            - approval-run
+
