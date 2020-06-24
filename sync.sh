@@ -98,7 +98,7 @@ do
         rsync -avh --include ".*" enforce/ work/$REPO     
         git add .
         git commit -am "sync for policy"   
-        git push
+        #git push
 
     fi
     popd
