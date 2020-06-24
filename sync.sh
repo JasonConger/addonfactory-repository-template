@@ -67,6 +67,7 @@ do
         curl -X POST --header "Content-Type: application/json" -d "{\"name\":\"GH_USER\", \"value\":\"${GITHUB_USER}\"}" https://circleci.com/api/v1.1/project/github/splunk/$REPO/envvar?circle-token=${CIRCLECI_TOKEN}
         curl -X POST --header "Content-Type: application/json" -d "{\"name\":\"GITHUB_TOKEN\", \"value\":\"${GITHUB_TOKEN}\"}" https://circleci.com/api/v1.1/project/github/splunk/$REPO/envvar?circle-token=${CIRCLECI_TOKEN}
 
+        git remote set-url origin https://$GITHUB_USER:$GITHUB_TOKEN@github.com/splunk/$REPO.git
         git push --set-upstream origin master
         git tag -a v$(crudini --get package/default/app.conf launcher version) -m "Release"
         git push --follow-tags
