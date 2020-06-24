@@ -12,7 +12,7 @@ jobs:
           command: |
             sudo apt install -y git
             wget https://github.com/cli/cli/releases/download/v0.10.0/gh_0.10.0_linux_amd64.deb
-            sudo dpkg -i gh_0.10.0_linux_arm64.deb
+            sudo dpkg -i gh_0.10.0_linux_amd64.deb
       - run:
           name: Install HUB CLI
           command: |
