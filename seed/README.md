@@ -12,9 +12,8 @@ git submodule update --init --recursive
 #setup python venv must be 3.7
 /Library/Frameworks/Python.framework/Versions/3.7/bin/python3 -m venv .venv
 source .venv/bin/activate
-pip3 install -r tests/requirements.txt
-pip3 install deps/pypi/pytest-splunk-addon
-pip3 install https://download.splunk.com/misc/appinspect/splunk-appinspect-latest.tar.gz
+pip install -r requirements.txt
+pip install https://download.splunk.com/misc/appinspect/splunk-appinspect-latest.tar.gz
 
 ```
 
