@@ -7,7 +7,6 @@ jobs:
       - image: cimg/base:2020.01
     steps:
       - checkout
-      - go/install
       - run:
           name: Install GH CLI
           command: |
