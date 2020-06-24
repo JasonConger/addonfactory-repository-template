@@ -92,6 +92,14 @@ do
             pushd work/$REPO
             git pull
         fi                
+
+        # Update any files in enforce
+        rsync -avh --include ".*" –ignore-existing seed/ work/$REPO
+        rsync -avh --include ".*" enforce/ work/$REPO     
+        git add .
+        git commit -am "sync for policy"   
+        git push
+
     fi
     popd
 done < repositories.csv
