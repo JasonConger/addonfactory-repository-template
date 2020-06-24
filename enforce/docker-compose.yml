@@ -1,0 +1,24 @@
+##
+## SPDX-FileCopyrightText: 2020 Splunk, Inc. <sales@splunk.com>
+## SPDX-License-Identifier: LicenseRef-Splunk-1-2020
+##
+##
+version: "3.7"
+services:
+  splunk:
+    build:
+      context: .
+      dockerfile: Dockerfile-splunk
+      args:
+        SPLUNK_APP_ID: ${SPLUNK_APP_ID}
+        SPLUNK_APP_PACKAGE: ${SPLUNK_APP_PACKAGE}
+        SPLUNK_VERSION: ${SPLUNK_VERSION}
+    ports:
+      - "8000"
+      - "8088"
+      - "8089"
+      - "9997"
+    environment:
+      - SPLUNK_PASSWORD=${SPLUNK_PASSWORD}
+      - SPLUNK_HEC_TOKEN=${SPLUNK_HEC_TOKEN}
+      - SPLUNK_START_ARGS=--accept-license

@@ -1,0 +1,38 @@
+##
+## SPDX-FileCopyrightText: 2020 Splunk, Inc. <sales@splunk.com>
+## SPDX-License-Identifier: LicenseRef-Splunk-1-2020
+##
+##
+version: "3.7"
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile-tests
+    links:
+      - splunk
+    volumes:
+      - results:/work/test-results
+
+  splunk:
+    build:
+      context: .
+      dockerfile: Dockerfile-splunk
+      args:
+        SPLUNK_APP_ID: ${SPLUNK_APP_ID}
+        SPLUNK_APP_PACKAGE: package
+        SPLUNK_VERSION: ${SPLUNK_VERSION}
+    hostname: splunk
+    ports:
+      - "8000"
+      - "8088"
+      - "8089"
+      - "9997"
+    environment:
+      - SPLUNK_PASSWORD=Chang3d!
+      - SPLUNK_START_ARGS=--accept-license
+
+volumes:
+  results:
+    external: false
