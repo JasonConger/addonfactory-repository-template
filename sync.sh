@@ -37,8 +37,8 @@ do
         rm -rf work/$REPO
         echo Repository is new    
         mkdir -p work/$REPO || true
-        rsync -avh --include ".*" seed/ work/$REPO
-        rsync -avh --include ".*" enforce/ work/$REPO
+        rsync -avh --include ".*" ../../seed/ .
+        rsync -avh --include ".*" ../../enforce/ .
         pushd work/$REPO
         
         crudini --set package/default/app.conf launcher description "$TITLE"
@@ -94,8 +94,10 @@ do
         fi                
 
         # Update any files in enforce
-        rsync -avh --include ".*" –ignore-existing seed/ work/$REPO
-        rsync -avh --include ".*" enforce/ work/$REPO     
+        rsync -avh --include ".*" –ignore-existing ../../seed/ .
+        rsync -avh --include ".*" ../../enforce/ .
+        git config  user.email "addonfactory@splunk.com"
+        git config  user.name "Addon Factory template"
         git add .
         git commit -am "sync for policy"   
         #git push
