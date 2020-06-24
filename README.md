@@ -1,0 +1,1 @@
+# addonfactory-repository-template
