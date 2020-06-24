@@ -27,6 +27,7 @@ command -v gh >/dev/null 2>&1 || { echo >&2 "I require gh but it's not installed
 command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
 command -v crudini >/dev/null 2>&1 || { echo >&2 "I require crudini but it's not installed.  Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo >&2 "I require jq but it's not installed.  Aborting."; exit 1; }
+command -v rsync >/dev/null 2>&1 || { echo >&2 "I require rsync but it's not installed.  Aborting."; exit 1; }
 
 while IFS=, read -r REPO TAID REPOVISIBILITY TITLE OTHER
 do
@@ -36,8 +37,8 @@ do
         rm -rf work/$REPO
         echo Repository is new    
         mkdir -p work/$REPO || true
-        cp -vr seed/ work/$REPO
-        cp -vrf enforce/ work/$REPO
+        rsync -avh --include ".*" seed/ work/$REPO
+        rsync -avh --include ".*" enforce/ work/$REPO
         pushd work/$REPO
         
         crudini --set package/default/app.conf launcher description "$TITLE"
