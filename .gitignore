@@ -3,3 +3,4 @@ work
 .venv
 !seed/.*
 !enforce/.*
+.env
