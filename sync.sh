@@ -1,5 +1,4 @@
 #!/bin/bash
-!
 REPOORG=splunk
 if [[  $GITHUB_USER && ${GITHUB_USER-x} ]]
 then
