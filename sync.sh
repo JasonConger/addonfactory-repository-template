@@ -64,7 +64,7 @@ do
 
         git add .
         git commit -am "base"
-        git tag -a v0.1.0 -m "CI base"        
+        git tag -a v0.2.0 -m "CI base"        
 
         hub create -p $REPOORG/$REPO
         hub api orgs/$REPOORG/teams/products-shared-services-all/repos/$REPOORG/$REPO --raw-field 'permission=maintain' -X PUT 
