@@ -50,6 +50,8 @@ do
         mv -f $tmpf package/app.manifest
 
         git init
+        git config  user.email "addonfactory@splunk.com"
+        git config  user.name "Addon Factory template"
         git submodule add git@github.com:splunk/addonfactory_test_matrix_splunk.git deps/build/addonfactory_test_matrix_splunk
         git submodule add git@github.com:splunk/addonfactory-splunk_sa_cim.git deps/apps/Splunk_SA_CIM
         git submodule add git@github.com:splunk/addonfactory-splunk_env_indexer.git deps/apps/splunk_env_indexer
