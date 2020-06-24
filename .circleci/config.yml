@@ -10,9 +10,7 @@ jobs:
       - run:
           name: Install rsync
           command: |
-            sudo apt install -y git
-            wget https://github.com/cli/cli/releases/download/v0.10.0/gh_0.10.0_linux_amd64.deb
-            sudo dpkg -i gh_0.10.0_linux_amd64.deb      
+            sudo apt install -y rsync
       - run:
           name: Install GH CLI
           command: |
