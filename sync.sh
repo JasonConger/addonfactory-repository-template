@@ -84,6 +84,14 @@ do
         
     else
         echo Repository is existing
+        if [ ! -d "$REPO" ]; then
+            hub clone $REPOORG/$REPO work/$REPO
+            pushd work/$REPO
+            git checkout develop
+        else
+            pushd work/$REPO
+            git pull
+        fi                
     fi
     popd
 done < repositories.csv
