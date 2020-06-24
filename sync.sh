@@ -101,7 +101,7 @@ do
         git config  user.name "Addon Factory template"
         git add .
         git commit -am "sync for policy"   
-        #git push
+        git push
 
     fi
     popd
