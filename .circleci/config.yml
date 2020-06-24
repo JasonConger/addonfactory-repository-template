@@ -17,6 +17,9 @@ jobs:
           name: Install HUB CLI
           command: |
             curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+      - run:
+          name: Apply Configuration policy
+          command: ./sync.sh
 
 workflows:
   sync:
