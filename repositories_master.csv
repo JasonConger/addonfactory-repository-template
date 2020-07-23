@@ -58,3 +58,4 @@ splunk-add-on-for-websense-dlp,Splunk_TA_websense-dlp,private,"Splunk Add-on for
 splunk-add-on-for-zeek-aka-bro,Splunk_TA_bro,private,"Splunk Add-on for Zeek aka Bro"
 splunk-add-on-for-rsa-securid-cas,Splunk_TA_rsa_securid_cas,private,"Splunk Add-on for RSA SecurID CAS"
 splunk-add-on-for-splunk-global-monitoring-console,Splunk_TA_splunk_global_monitoring_console,"Splunk Add-on for Splunk Global Monitoring Console"
+splunk-add-on-for-zoom,Splunk_TA_zoom,"Splunk Add-on for Zoom"
