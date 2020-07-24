@@ -40,9 +40,9 @@ do
         rm -rf work/$REPO
         echo Repository is new    
         mkdir -p work/$REPO || true
+        pushd work/$REPO        
         rsync -avh --include ".*" ../../seed/ .
         rsync -avh --include ".*" ../../enforce/ .
-        pushd work/$REPO
         
         crudini --set package/default/app.conf launcher description "$TITLE"
         crudini --set package/default/app.conf ui label "$TITLE"
