@@ -98,9 +98,9 @@ do
         fi
 
         # Update any files in enforce
-        if [ "$BRANCH" != "master" ]; then
-            git checkout -B "test/templateupdate" develop
-        fi
+        #if [ "$BRANCH" != "master" ]; then
+        git checkout -B "test/templateupdate" develop
+        #fi
         rsync -avh --include ".*" --ignore-existing ../../seed/ .
         rsync -avh --include ".*" ../../enforce/ .
 
@@ -140,7 +140,7 @@ do
         #     git push
         # fi
         git push -f --set-upstream origin test/templateupdate
-        hub pull-request -p -f -b develop "Update repository configuration from template" --no-edit
+        hub pull-request -b develop "Update repository configuration from template" --no-edit
 
     fi
     popd
