@@ -140,7 +140,7 @@ do
         #     git push
         # fi
         git push -f --set-upstream origin test/templateupdate
-        hub pull-request -b develop "Update repository configuration from template" --no-edit
+        hub pull-request -b develop "Bump repository configuration from template" --no-edit
 
     fi
     popd
