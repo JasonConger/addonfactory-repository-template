@@ -182,6 +182,7 @@ orbs:
       python37:
         docker:
           - image: circleci/python:3.7
+        resource_class: xlarge
     commands:
       aio:
         parameters:
@@ -231,7 +232,6 @@ orbs:
 
     jobs:
       aio:
-        resource_class: xlarge
         parameters:
           splunk_version:
             description: Image version
