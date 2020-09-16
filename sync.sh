@@ -35,7 +35,7 @@ command -v rsync >/dev/null 2>&1 || { echo >&2 "I require rsync but it's not ins
 while IFS=, read -r REPO TAID REPOVISIBILITY TITLE OTHER
 do
     echo "Woring on:$REPO|$TAID|$REPOVISIBILITY|$TITLE|$OTHER"
-    if ! gh repo view -R $REPOORG/${REPO} >/dev/null
+    if ! gh repo view $REPOORG/${REPO} >/dev/null
     then
         rm -rf work/$REPO
         echo Repository is new
