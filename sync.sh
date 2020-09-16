@@ -143,6 +143,10 @@ do
         git push -f --set-upstream origin test/templateupdate
         hub pull-request -b develop "Bump repository configuration from template" --no-edit
 
+        hub api orgs/$REPOORG/teams/products-shared-services-all/repos/$REPOORG/$REPO --raw-field 'permission=maintain' -X PUT || true
+        hub api orgs/$REPOORG/teams/productsecurity/repos/$REPOORG/$REPO --raw-field 'permission=read' -X PUT || true
+        hub api /repos/$REPOORG/$REPO --raw-field 'visibility=${REPOVISIBILITY}' -X PATCH || true
+
     fi
     popd
 done < $INPUTFILE
