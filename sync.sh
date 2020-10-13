@@ -35,7 +35,7 @@ command -v rsync >/dev/null 2>&1 || { echo >&2 "I require rsync but it's not ins
 while IFS=, read -r REPO TAID REPOVISIBILITY TITLE OTHER
 do
     echo "Woring on:$REPO|$TAID|$REPOVISIBILITY|$TITLE|$OTHER"
-    if ! gh repo view -R $REPOORG/${REPO} >/dev/null
+    if ! gh repo view $REPOORG/${REPO} >/dev/null
     then
         rm -rf work/$REPO
         echo Repository is new
@@ -72,6 +72,8 @@ do
         hub create -p $REPOORG/$REPO
         hub api orgs/$REPOORG/teams/products-shared-services-all/repos/$REPOORG/$REPO --raw-field 'permission=maintain' -X PUT
         hub api orgs/$REPOORG/teams/productsecurity/repos/$REPOORG/$REPO --raw-field 'permission=read' -X PUT
+        hub api /repos/$REPOORG/$REPO --raw-field 'visibility=${REPOVISIBILITY}' -X PATCH
+        hub api /repos/$REPOORG/$REPO  -H 'Accept: application/vnd.github.nebula-preview+json' -X PATCH -F visibility=$REPOVISIBILITY
 
         curl -X POST https://circleci.com/api/v1.1/project/github/$REPOORG/$REPO/follow?circle-token=${CIRCLECI_TOKEN}
         curl -X POST --header "Content-Type: application/json" -d '{"type":"github-user-key"}' https://circleci.com/api/v1.1/project/github/$REPOORG/$REPO/checkout-key?circle-token=${CIRCLECI_TOKEN}
@@ -87,6 +89,9 @@ do
 
     else
         echo Repository is existing
+        
+        hub api repos/$REPOORG/$REPO --raw-field 'visibility=${REPOVISIBILITY}' -X PATCH || true
+
         if [ ! -d "$REPO" ]; then
             #hub clone $REPOORG/$REPO work/$REPO
             git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$REPOORG/$REPO.git work/$REPO
@@ -141,6 +146,7 @@ do
         # fi
         git push -f --set-upstream origin test/templateupdate
         hub pull-request -b develop "Bump repository configuration from template" --no-edit
+        hub api /repos/$REPOORG/$REPO  -H 'Accept: application/vnd.github.nebula-preview+json' -X PATCH -F visibility=$REPOVISIBILITY
 
     fi
     popd

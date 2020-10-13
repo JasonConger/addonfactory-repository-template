@@ -16,8 +16,9 @@ jobs:
           name: Install GH CLI
           command: |
             sudo apt install -y git
-            wget https://github.com/cli/cli/releases/download/v0.10.0/gh_0.10.0_linux_amd64.deb
-            sudo dpkg -i gh_0.10.0_linux_amd64.deb
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0 
+            sudo apt-add-repository -u https://cli.github.com/packages  -y
+            sudo apt install gh -y
       - run:
           name: Install HUB CLI
           command: |
