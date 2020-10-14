@@ -143,7 +143,8 @@ do
             git rm -f deps/apps/splunk_env_indexer
             git add .
             git commit -m "Deprecate splunk_env_indexer submodule"
-        fi        
+        fi       
+        git submodule update --remote --merge deps/build/addonfactory_test_matrix_splunk 
         if [[ -f "requirements.txt" ]]; then
           mkdir -p package/lib || true
           git mv requirements.txt package/lib/
@@ -163,7 +164,7 @@ do
           git rm packagingScript.sh          
         fi
         git rm splunk_add_on_ucc_framework-* || true        
-        git submodule foreach git pull origin master
+        
         git config  user.email "addonfactory@splunk.com"
         git config  user.name "Addon Factory template"
         git add . || true
