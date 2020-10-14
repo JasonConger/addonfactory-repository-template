@@ -133,12 +133,41 @@ do
         if [ -d ".dependabot" ]; then
             git rm -rf .dependabot
         fi
-
+        if [ -d "deps/apps/splunk_env_indexer" ]; then
+            git submodule deinit -f deps/apps/splunk_env_indexer
+            pushd deps/build/addonfactory_test_matrix_splunk/
+            git checkout master
+            git pull
+            popd
+            rm -rf .git/modules/deps/apps/splunk_env_indexer
+            git rm -f deps/apps/splunk_env_indexer
+            git add .
+            git commit -m "Deprecate splunk_env_indexer submodule"
+        fi        
+        if [[ -f "requirements.txt" ]]; then
+          mkdir -p package/lib || true
+          git mv requirements.txt package/lib/
+        fi
+        if [[ -f "requirements_py2.txt" ]]; then
+          mkdir -p package/lib/py2 || true
+          git mv requirements.txt package/lib/py2/
+        fi        
+        if [[ -f "requirements_py3.txt" ]]; then
+          mkdir -p package/lib/py3 || true
+          git mv requirements.txt package/lib/py3/
+        fi
+        if [[ -f "splver.py" ]]; then
+          git rm splver.py
+        fi
+        if [[ -f "packagingScript.sh" ]]; then
+          git rm packagingScript.sh          
+        fi
+        git rm splunk_add_on_ucc_framework-* || true        
 
         git config  user.email "addonfactory@splunk.com"
         git config  user.name "Addon Factory template"
-        git add .
-        git commit -am "sync for policy"
+        git add . || true
+        git commit -am "sync for policy" || true
         # if [ "$BRANCH" != "master" ]; then
         #     git push -f --set-upstream origin test/templateupdate
         # else
