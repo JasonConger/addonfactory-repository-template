@@ -163,7 +163,7 @@ do
           git rm packagingScript.sh          
         fi
         git rm splunk_add_on_ucc_framework-* || true        
-
+        git submodule foreach git pull origin master
         git config  user.email "addonfactory@splunk.com"
         git config  user.name "Addon Factory template"
         git add . || true
