@@ -135,10 +135,6 @@ do
         fi
         if [ -d "deps/apps/splunk_env_indexer" ]; then
             git submodule deinit -f deps/apps/splunk_env_indexer
-            pushd deps/build/addonfactory_test_matrix_splunk/
-            git checkout master
-            git pull
-            popd
             rm -rf .git/modules/deps/apps/splunk_env_indexer
             git rm -f deps/apps/splunk_env_indexer
             git add .
