@@ -101,10 +101,13 @@ do
             pushd work/$REPO
             git pull
         fi
-
+        git config  user.email "addonfactory@splunk.com"
+        git config  user.name "Addon Factory template"
+        
         # Update any files in enforce
         #if [ "$BRANCH" != "master" ]; then
         git checkout -B "test/templateupdate" develop
+        git submodule update --init --recursive
         #fi
         rsync -avh --include ".*" --ignore-existing ../../seed/ .
         rsync -avh --include ".*" ../../enforce/ .
@@ -161,8 +164,6 @@ do
         fi
         git rm splunk_add_on_ucc_framework-* || true        
         
-        git config  user.email "addonfactory@splunk.com"
-        git config  user.name "Addon Factory template"
         git add . || true
         git commit -am "sync for policy" || true
         # if [ "$BRANCH" != "master" ]; then
