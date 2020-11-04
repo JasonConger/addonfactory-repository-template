@@ -38,7 +38,9 @@ do
     #Things we want to do no matter what
     #Create RP Project
     curl -X POST "$RP_ENDPOINT/api/v1/project" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"entryType\": \"INTERNAL\", \"projectName\": \"${REPO}\"}" || true
-
+    #Assign service and admin accounts note if this has already been done an error will be returned indicating can not be done twice
+    curl -X PUT  "$RP_ENDPOINT/api/v1/project/${REPO}/assign" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"userNames\": { \"circleci\": \"PROJECT_MANAGER\" }}"  || true
+    curl -X PUT  "$RP_ENDPOINT/api/v1/project/${REPO}/assign" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"userNames\": { \"default\": \"PROJECT_MANAGER\" }}"  || true
     #Conditional work
     if ! gh repo view $REPOORG/${REPO} >/dev/null
     then
