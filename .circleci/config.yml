@@ -46,5 +46,7 @@ workflows:
       - approval-run:
           type: approval
       - sync:
+          context:
+            - gdi-reportportal
           requires:
             - approval-run
