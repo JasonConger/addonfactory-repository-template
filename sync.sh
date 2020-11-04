@@ -35,8 +35,9 @@ command -v rsync >/dev/null 2>&1 || { echo >&2 "I require rsync but it's not ins
 while IFS=, read -r REPO TAID REPOVISIBILITY TITLE OTHER
 do
     echo "Woring on:$REPO|$TAID|$REPOVISIBILITY|$TITLE|$OTHER"
-    #Things we want to do no matterwhat
-    curl -X POST "$RP_ENDPOINT/v1/project" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"entryType\": \"INTERNAL\", \"projectName\": \"${REPO}\"}" || true
+    #Things we want to do no matter what
+    #Create RP Project
+    curl -X POST "$RP_ENDPOINT/api/v1/project" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"entryType\": \"INTERNAL\", \"projectName\": \"${REPO}\"}" || true
 
     #Conditional work
     if ! gh repo view $REPOORG/${REPO} >/dev/null
