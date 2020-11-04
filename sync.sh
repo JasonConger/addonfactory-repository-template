@@ -170,6 +170,9 @@ do
           git rm packagingScript.sh          
         fi
         git rm splunk_add_on_ucc_framework-* || true        
+        if [[ -f "build.sh" ]]; then
+          git rm build.sh          
+        fi
         
         git add . || true
         git commit -am "sync for policy" || true
