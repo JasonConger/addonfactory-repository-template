@@ -23,11 +23,11 @@ orbs:
                 eval "$(pyenv init -)"
                 eval "$(pyenv virtualenv-init -)"
                 for line in `cat .python-version`; do pyenv install -s "$line"; done                
-                pip install --upgrade pip
-                pip install --upgrade virtualenv
-                pip3 install --upgrade pip
-                pip3 install --upgrade virtualenv                
-                sudo python3 -m pip install -r requirements_dev.txt
+                python2 -m pip install --upgrade pip
+                python2 -m pip install --upgrade virtualenv
+                python3 -m pip install --upgrade pip
+                python3 -m pip install --upgrade virtualenv                
+                python3 -m pip install -r requirements_dev.txt || true
           - run:
               name: Generate Addon
               command: |
