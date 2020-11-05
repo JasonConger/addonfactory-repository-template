@@ -27,7 +27,7 @@ orbs:
                 pip install --upgrade virtualenv
                 pip3 install --upgrade pip
                 pip3 install --upgrade virtualenv                
-                python3 -m pip install -r requirements_dev.txt
+                sudo python3 -m pip install -r requirements_dev.txt
           - run:
               name: Generate Addon
               command: |
