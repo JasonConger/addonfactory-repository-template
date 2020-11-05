@@ -173,7 +173,12 @@ do
         if [[ -f "build.sh" ]]; then
           git rm build.sh          
         fi
-        
+        if [ -d "deps/build/disable_popup" ]; then
+            git rm -f deps/build/disable_popup
+            git submodule update --remote --merge deps/build/addonfactory_test_matrix_splunk
+            git add .
+            git commit -m "Deprecate disable_popup"
+        fi  
         git add . || true
         git commit -am "sync for policy" || true
         # if [ "$BRANCH" != "master" ]; then
