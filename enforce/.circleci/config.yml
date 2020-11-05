@@ -32,7 +32,7 @@ orbs:
                 python3 -m virtualenv .venv -p python3 > /dev/null
                 fi
                 source .venv/bin/activate
-                pip install --user -r requirements_dev.txt || true
+                pip install -r requirements_dev.txt || true
           - run:
               name: Generate Addon
               command: |
