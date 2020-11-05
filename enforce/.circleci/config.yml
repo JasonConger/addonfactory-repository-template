@@ -17,15 +17,15 @@ orbs:
           - run:
               name: Setup Environment
               command: |
-                pip2 install --upgrade pip
-                pip2 install --upgrade virtualenv
-                pip3 install --upgrade pip
-                pip3 install --upgrade virtualenv
                 unset PYENV_ROOT
                 curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
                 export PATH="$HOME/.pyenv/bin:$PATH"
                 eval "$(pyenv init -)"
                 for line in `cat .python-version`; do pyenv install -s "$line"; done
+                pip2 install --upgrade pip
+                pip2 install --upgrade virtualenv
+                pip3 install --upgrade pip
+                pip3 install --upgrade virtualenv                
                 pip3 install -r requirements_dev.txt
           - run:
               name: Generate Addon
