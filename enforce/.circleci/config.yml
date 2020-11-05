@@ -12,6 +12,7 @@ orbs:
       package:
         docker:
           - image: circleci/buildpack-deps:stable
+        resource_class: large          
         steps:
           - checkout
           - run:
