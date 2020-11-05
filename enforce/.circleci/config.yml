@@ -8,18 +8,17 @@ version: 2.1
 orbs:
   go: circleci/go@0.2.0
   splunk-app-package:
-    executors:
-      python27:
+    jobs:
+      package:
         docker:
           - image: circleci/buildpack-deps:stable
-    commands:
-      package:
         steps:
+          - checkout
           - run:
               name: Setup Environment
               command: |
-                pip install --upgrade pip
-                pip install --upgrade virtualenv
+                pip2 install --upgrade pip
+                pip2 install --upgrade virtualenv
                 pip3 install --upgrade pip
                 pip3 install --upgrade virtualenv
                 unset PYENV_ROOT
@@ -49,12 +48,6 @@ orbs:
                 mkdir -p build/package/deployment
                 PACKAGE=$(ls build/package/splunkbase/*)
                 slim validate $PACKAGE
-    jobs:
-      package:
-        executor: python27
-        steps:
-          - checkout
-          - package
           - persist_to_workspace:
               root: /home/circleci/project
               paths:
