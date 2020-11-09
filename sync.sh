@@ -35,6 +35,13 @@ command -v rsync >/dev/null 2>&1 || { echo >&2 "I require rsync but it's not ins
 while IFS=, read -r REPO TAID REPOVISIBILITY TITLE OTHER
 do
     echo "Woring on:$REPO|$TAID|$REPOVISIBILITY|$TITLE|$OTHER"
+    #Things we want to do no matter what
+    #Create RP Project
+    curl -X POST "$RP_ENDPOINT/api/v1/project" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"entryType\": \"INTERNAL\", \"projectName\": \"${REPO}\"}" || true
+    #Assign service and admin accounts note if this has already been done an error will be returned indicating can not be done twice
+    curl -X PUT  "$RP_ENDPOINT/api/v1/project/${REPO}/assign" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"userNames\": { \"circleci\": \"PROJECT_MANAGER\" }}"  || true
+    curl -X PUT  "$RP_ENDPOINT/api/v1/project/${REPO}/assign" -H "accept: */*" -H "Content-Type: application/json" -H "Authorization: bearer $RP_UUID" -d "{ \"userNames\": { \"default\": \"PROJECT_MANAGER\" }}"  || true
+    #Conditional work
     if ! gh repo view $REPOORG/${REPO} >/dev/null
     then
         rm -rf work/$REPO
@@ -101,10 +108,14 @@ do
             pushd work/$REPO
             git pull
         fi
-
+        git config  user.email "addonfactory@splunk.com"
+        git config  user.name "Addon Factory template"
+        
         # Update any files in enforce
-        #if [ "$BRANCH" != "master" ]; then
+        #if [ "$BRANCH" != "master" ]; then 
+        ( git checkout test/templateupdate  && git checkout develop && git branch -D test/templateupdate ) || true
         git checkout -B "test/templateupdate" develop
+        git submodule update --init --recursive
         #fi
         rsync -avh --include ".*" --ignore-existing ../../seed/ .
         rsync -avh --include ".*" ../../enforce/ .
@@ -117,7 +128,7 @@ do
 
         # Remove the entry in .gitmodules and remove the submodule directory located at path/to/submodule
         git rm -f deps/script || true
-        #Updates for pytest-splunkadd-on >=1.2.2a1
+        #Updates for pytest-splunk-add-on >=1.2.2a1
         if [ ! -d "tests/data" ]; then
             mkdir -p tests/data
         fi
@@ -133,12 +144,73 @@ do
         if [ -d ".dependabot" ]; then
             git rm -rf .dependabot
         fi
+        if [ -d "deps/apps/splunk_env_indexer" ]; then
+            git submodule deinit -f deps/apps/splunk_env_indexer
+            rm -rf .git/modules/deps/apps/splunk_env_indexer
+            git rm -f deps/apps/splunk_env_indexer
+            git add deps/apps/splunk_env_indexer
+            git commit -m "Deprecate splunk_env_indexer submodule"
+        fi       
+        git submodule update --remote --merge deps/build/addonfactory_test_matrix_splunk 
+        if [[ -f "requirements.txt" ]]; then
+          mkdir -p package/lib || true
+          git mv requirements.txt package/lib/
+        fi
+        if [[ -f "requirements_py2.txt" ]]; then
+          mkdir -p package/lib/py2 || true
+          git mv requirements.txt package/lib/py2/
+        fi        
+        if [[ -f "requirements_py3.txt" ]]; then
+          mkdir -p package/lib/py3 || true
+          git mv requirements.txt package/lib/py3/
+        fi
+        if [[ -f "splver.py" ]]; then
+          git rm splver.py
+        fi
+        if [[ -f "packagingScript.sh" ]]; then
+          git rm packagingScript.sh          
+        fi
+        git rm splunk_add_on_ucc_framework-* || true        
+        if [[ -f "build.sh" ]]; then
+          git rm build.sh          
+        fi
+        if [ -d "deps/build/disable_popup" ]; then
+            git rm -f deps/build/disable_popup
+            git submodule update --remote --merge deps/build/addonfactory_test_matrix_splunk
+            git add deps/build/disable_popup
+            git commit -m "Deprecate disable_popup"
+        fi
+        if [[ -d "tests/data" ]]; then
+            mkdir -p tests/knowledge || true
+            git mv tests/data/* tests/knowledge
+        fi
 
-
-        git config  user.email "addonfactory@splunk.com"
-        git config  user.name "Addon Factory template"
-        git add .
-        git commit -am "sync for policy"
+        if [[ -f "tests/pytest.ini" ]]; then
+            git rm tests/pytest.ini || true
+        fi
+        if [[ -f "tests/test_addon.py" ]]; then
+            git rm tests/test_addon.py || true
+        fi
+        if [[ -f "tests/__init__.py" ]]; then
+            git rm tests/__init__.py || true
+        fi
+        if [[ -f "tests/pytest-ci.ini" ]]; then
+            git rm tests/pytest-ci.ini || true
+        fi
+        if [[ -f "tests/conftest.py" ]]; then
+            git rm tests/conftest.py || true
+        fi
+        if [[ -f "tests/requirements.txt" ]]; then
+            git rm tests/requirements.txt || true
+        fi
+        if [[ -f "requirements.txt" ]]; then
+            git rm requirements.txt || true
+        fi
+        if [[ -d "tests/ui" ]]; then
+            rsync -avh --include ".*" ../../conditional/ .
+        fi
+        git add . || true
+        git commit -am "sync for policy" || true
         # if [ "$BRANCH" != "master" ]; then
         #     git push -f --set-upstream origin test/templateupdate
         # else

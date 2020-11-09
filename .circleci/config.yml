@@ -5,6 +5,7 @@ jobs:
   sync:
     docker:
       - image: cimg/python:3.7
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -46,5 +47,7 @@ workflows:
       - approval-run:
           type: approval
       - sync:
+          context:
+            - gdi-reportportal
           requires:
             - approval-run
