@@ -8,3 +8,4 @@ splunk-add-on-for-rsa-securid-cas,Splunk_TA_rsa_securid_cas,internal,"Splunk Add
 splunk-add-on-for-cef,TA-cef-for-splunk,public,"TA CEF for Splunk"
 splunk-add-on-for-splunk-global-monitoring-console,Splunk_TA_splunk_global_monitoring_console,public,"Splunk Add-on for Splunk Global Monitoring Console"
 splunk-add-on-for-ucc-example,Splunk_TA_UCCExample,public,"Splunk_TA_UCCExample"
+seckit_sa_geolocation,SecKit_SA_geolocation,public,"SecKit Geolocation with Maxmind"
