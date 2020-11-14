@@ -34,7 +34,7 @@ orbs:
               command: |
                 PACKAGE_ID=$(ls output/)
                 BUILD_DIR=output/$PACKAGE_ID              
-                source ~/.venv/bin/activate
+                source ~/.venv/bin/activate                
                 slim generate-manifest $BUILD_DIR --update >/tmp/app.manifest   || true
                 cp  /tmp/app.manifest  $BUILD_DIR/app.manifest
                 mkdir -p build/package/splunkbase
@@ -309,10 +309,10 @@ jobs:
           name: "Publish on GitHub"
           command: |
             PATH=$PATH:/usr/local/go/bin
-            PACKAGE=$(ls /tmp/workspace/build/package/splunkbase/*)
-            source /tmp/workspace/build/VERSION
             go get -v -u github.com/tcnksm/ghr            
-            $HOME/go/bin/ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${ISPRE} -delete ${VERSION} $PACKAGE
+            [[ << pipeline.git.tag >> =~ ^v[0-9]*.[0-9]*.[0-9]*$ ]] || export ISPRE=-prerelease
+            $HOME/go/bin/ghr -t ${GH_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${ISPRE} -delete "<< pipeline.git.tag >>" /tmp/workspace/build/package/splunkbase
+            $HOME/go/bin/ghr -t ${GH_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${ISPRE} "<< pipeline.git.tag >>" /tmp/workspace/build/package/deployment
 
   publish-sbase:
     docker:
@@ -331,10 +331,11 @@ jobs:
           name: "Publish on Splunkbase"
           command: |
             source .splunkbase
-            source /tmp/workspace/build/VERSION
             PACKAGE=$(ls /tmp/workspace/build/package/splunkbase/*)
             PACKAGE_ID=$(crudini --get package/default/app.conf id name)
-            [ "${ISPRE}" == "-prerelease" ] && SPLUNKBASE_VIS="false" || SPLUNKBASE_VIS="true"                
+            [[ << pipeline.git.tag >> =~ ^v[0-9]*.[0-9]*.[0-9]*$ ]] || export ISPRE=-prerelease
+            [ "${ISPRE}" == "-prerelease" ] && SPLUNKBASE_VIS="false" || SPLUNKBASE_VIS="true"
+            export SPLUNKBASE_SPLUNK_VERSION=$(echo << pipeline.git.tag >> | sed 's/^v\(.*\)/\1/')            
             curl -u ${SPLUNKBASE_USERNAME}:${SPLUNKBASE_PASSWORD}  --request POST https://splunkbase.splunk.com/api/v1/app/${SPLUNKBASE_ID}/new_release/ -F "files[]=@${PACKAGE}" -F "filename=${PACKAGE_ID}.spl" -F "splunk_versions=${SPLUNKBASE_SPLUNK_VERSION}" -F "visibility=${SPLUNKBASE_VIS}"
   reuse:
     docker:
@@ -482,6 +483,8 @@ workflows:
             tags:
               only: /^v\d*\.\d*\.\d*.*$/
       - publish-gh:
+          context:
+            - gdi-github
           requires:
             - package
           filters:
