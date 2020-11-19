@@ -1,4 +1,4 @@
-splunk-add-on-for-haproxy,Splunk_TA_haproxy,internal,"Splunk Add-on for HAProxy",master
+splunk-splunk-add-on-for-amazon-web-services,Splunk_TA_aws,internal,"Splunk Add-on for AWS",develop
 splunk-add-on-for-cef,TA-cef-for-splunk,public,"TA CEF for Splunk",develop
 splunk-add-on-for-splunk-global-monitoring-console,Splunk_TA_splunk_global_monitoring_console,public,"Splunk Add-on for Splunk Global Monitoring Console",develop
 splunk-add-on-for-ucc-example,Splunk_TA_UCCExample,public,"Splunk_TA_UCCExample",develop
