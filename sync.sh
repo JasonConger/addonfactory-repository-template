@@ -113,8 +113,8 @@ do
         
         # Update any files in enforce
         #if [ "$BRANCH" != "master" ]; then 
-        ( git checkout test/templateupdate  && git checkout develop && git branch -D test/templateupdate ) || true
-        git checkout -B "test/templateupdate" $BRANCH
+        ( git checkout test/report_portal  && git checkout develop && git branch -D test/report_portal ) || true
+        git checkout -B "test/report_portal" $BRANCH
         git submodule update --init --recursive
         #fi
         rsync -avh --include ".*" --ignore-existing ../../seed/ .
@@ -225,7 +225,7 @@ do
         #     git push
         # fi
         git push -f --set-upstream origin test/templateupdate
-        hub pull-request -b $BRANCH "Bump repository configuration from template" --no-edit
+        #hub pull-request -b $BRANCH "Bump repository configuration from template" --no-edit
         hub api /repos/$REPOORG/$REPO  -H 'Accept: application/vnd.github.nebula-preview+json' -X PATCH -F visibility=$REPOVISIBILITY
 
     fi
