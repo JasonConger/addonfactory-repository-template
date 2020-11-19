@@ -224,7 +224,7 @@ do
         # else
         #     git push
         # fi
-        git push -f --set-upstream origin test/templateupdate
+        git push -f --set-upstream origin test/report_portal
         #hub pull-request -b $BRANCH "Bump repository configuration from template" --no-edit
         hub api /repos/$REPOORG/$REPO  -H 'Accept: application/vnd.github.nebula-preview+json' -X PATCH -F visibility=$REPOVISIBILITY
 
