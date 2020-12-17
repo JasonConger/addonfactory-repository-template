@@ -65,5 +65,3 @@ splunk-add-on-for-mcafee-nsp,Splunk_TA_mcafee_nsp,internal,"Splunk Add-on for Mc
 splunk-add-on-for-ucc-example,Splunk_TA_UCCExample,public,"Splunk_TA_UCCExample",develop
 seckit_sa_geolocation,SecKit_SA_geolocation,public,"SecKit Geolocation with Maxmind",develop
 splunk-add-on-for-modinput-test,Splunk_TA_Modinput_Test,internal,"Splunk Add-on for Modinput Test",develop
-dropbox-add-on-for-splunk,TA_Dropbox,internal,"Dropbox Business Add-on for Splunk",master
-dropbox-app-for-splunk,splunk-app-dropbox,"Dropbox Business App for Splunk",master
