@@ -6,11 +6,10 @@
 ##
 
 cd /home/circleci/work
-pip install pip --upgrade
+pip install pip==20.2
 if [ -f "${TEST_SET}/pytest-ci.ini" ]; then
     cp -f ${TEST_SET}/pytest-ci.ini pytest.ini
 fi
-
 
 # Installing the lib folder inside requirements for unit test case stage
 if [ "${TEST_TYPE}" = "unit" ]
@@ -52,7 +51,7 @@ then
         pytest $@ \
         --reportportal -o "rp_endpoint=${RP_ENDPOINT}" -o "rp_launch_attributes=${RP_LAUNCH_ATTRIBUTES}" \
         -o "rp_project=${RP_PROJECT}" -o "rp_launch=${RP_LAUNCH}" -o "rp_launch_description='${RP_LAUNCH_DESC}'" -o "rp_ignore_attributes='xfail' 'usefixture'" \
-        ${TEST_SET} 
+        ${TEST_SET}
         test_exit_code=$?
     fi
 else
