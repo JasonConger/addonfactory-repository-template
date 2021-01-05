@@ -22,7 +22,8 @@ orbs:
                 sudo apt-get install -y python2 python-pip python-virtualenv python3 python3.7 python3-pip python3-virtualenv
                 python3.7 -m virtualenv ~/.venv -p python3
                 source ~/.venv/bin/activate
-                pip install -r requirements_dev.txt || true
+                pip install pip --upgrade
+                pip install -r requirements_dev.txt --use-deprecated=legacy-resolver || true
                 pip install semantic_version==2.6.0
           - run:
               name: Generate Addon
@@ -225,17 +226,20 @@ jobs:
           no_output_timeout: 2h
           command: |
             # Start Splunk
-            TEST_SET=$(echo "<<parameters.test_set>>" | awk -F- '{print $1}' )
+            TEST_TYPE=$(echo "<<parameters.test_set>>" | awk -F- '{print $1}' )
             BROWSER=$(echo "<<parameters.test_set>>" | awk -F- '{print $2}' )
-            [ ! -d "tests/$TEST_SET" ] && exit 0
+            export IMAGE_TAG="3.7-browsers"
+
+            [ ! -d "tests/$TEST_TYPE" ] && exit 0
             [ "$BROWSER" = "safari" ] && [ "$UI_TEST_HEADLESS" = "true" ] && exit 0
             export SPLUNK_VERSION=$(crudini --get deps/build/addonfactory_test_matrix_splunk/splunk_matrix.conf "<<parameters.splunk_version>>" VERSION)
             export SPLUNK_APP_ID=$(crudini --get package/default/app.conf id name)
             export SPLUNK_APP_PACKAGE=output/$(ls output/)
-            export TEST_SET=tests/$TEST_SET
+            export TEST_SET=tests/$TEST_TYPE
+            export TEST_TYPE=$TEST_TYPE
             export TEST_BROWSER=$BROWSER
             # JOB_NAME: For Saucelabs integration. Used as a build-name.
-            export JOB_NAME="CircleCI::$CIRCLE_PROJECT_REPONAME[$CIRCLE_BRANCH][$TEST_BROWSER] #$CIRCLE_BUILD_NUM"
+            export JOB_NAME="CircleCI::$CIRCLE_PROJECT_REPONAME[$CIRCLE_BRANCH][$TEST_BROWSER][$PYTHON_VERSION] #$CIRCLE_BUILD_NUM"
             export SAUCE_IDENTIFIER=$SAUCE_IDENTIFIER-$(cat /proc/sys/kernel/random/uuid)
 
             #export env credentials
@@ -254,7 +258,8 @@ jobs:
             docker-compose -f docker-compose-ci.yml build
 
             # Saucelab connection
-            [ -z $BROWSER ] || [ "$UI_TEST_HEADLESS" = "true" ] || docker-compose -f docker-compose-ci.yml up -d sauceconnect                
+            [ -z $BROWSER ] || [ "$UI_TEST_HEADLESS" = "true" ] || docker-compose -f docker-compose-ci.yml up -d sauceconnect 
+
             # Start Splunk
             docker-compose -f docker-compose-ci.yml up -d splunk                
             until docker-compose -f docker-compose-ci.yml logs splunk | grep "Ansible playbook complete" ; do sleep 1; done
@@ -270,6 +275,7 @@ jobs:
 
             # Normal Inspecting
             [ -z $BROWSER ] || [ "$UI_TEST_HEADLESS" = "true" ] || docker-compose -f docker-compose-ci.yml logs sauceconnect
+
             docker ps -a
                             
             # Run the tests
@@ -289,6 +295,78 @@ jobs:
       - store_artifacts:
           path: /tmp/diag
           destination: test-diag
+      - store_artifacts:
+          path: test-results
+          destination: test-results
+      - store_test_results:
+          path: test-results
+
+  splunk-app-unit-test:
+    parameters:
+      test_set:
+        description: Test Set
+        type: string
+        default: py3-3.7.8
+    docker:
+      - image: circleci/python:3.7
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Setup for testing
+          command: |
+            pip install git+https://github.com/pixelb/crudini        
+            mkdir test-results
+            cp -rf /tmp/workspace/* .
+      - run:
+          name: Splunk Testing
+          no_output_timeout: 2h
+          command: |
+            PYTHON_VERSION=$(echo "<<parameters.test_set>>" | awk -F- '{print $1}' )
+            export IMAGE_TAG=$(echo "<<parameters.test_set>>" | awk -F- '{print $2}' )
+
+            [ ! -d "tests/unit" ] && exit 0
+            export SPLUNK_VERSION=latest
+            export SPLUNK_APP_ID=$(crudini --get package/default/app.conf id name)
+            export SPLUNK_APP_PACKAGE=output/$(ls output/)
+            export TEST_SET=tests/unit
+            export TEST_TYPE=unit
+
+            #export env credentials
+            if [ -f ".circleci/testcredentials.sh" ]; then
+                bash ./.circleci/testcredentials.sh
+            fi
+
+            #Report portal integration
+            export RP_LAUNCH_ATTRIBUTES="'job:${CIRCLE_JOB}' 'deployment:byoe' 'branch:<< pipeline.git.branch >>' 'commit:${CIRCLE_SHA1}' 'release:${RELEASE}' 'version:$(./semtag getcurrent)' 'test_set:<<parameters.test_set>>' 'repo:${CIRCLE_PROJECT_REPONAME}'"
+            export RP_PROJECT=addonfactory
+
+            export RP_LAUNCH="$CIRCLE_PROJECT_REPONAME-$(echo <<parameters.test_set>> | sed 's/\(.*\)\(-.*\)/\1/')"
+            export RP_LAUNCH_DESC="ci run"
+
+            # Build
+            docker-compose -f docker-compose-ci.yml build test
+
+            docker ps -a
+                            
+            # Run the tests
+            test_exit_code=0
+
+            docker-compose -f docker-compose-ci.yml up --abort-on-container-exit test || test_exit_code=$?
+            # Collect Results
+            docker container create --name dummy \
+                                -v project_results:/home/circleci/work \
+                                registry.access.redhat.com/ubi7/ubi
+            docker cp dummy:/home/circleci/work/test-results/test.xml test-results/  || echo "ignoring..."
+            docker-compose -f docker-compose-ci.yml down || echo "ignoring..."
+            exit "$test_exit_code"
+
       - store_artifacts:
           path: test-results
           destination: test-results
@@ -388,9 +466,33 @@ workflows:
             - package
           matrix:
             parameters:
-              splunk_version: ["8.0"]
-              test_set:
-                ["knowledge", "ui-firefox", "ui-chrome", "ui-safari", "ui-edge"]
+              splunk_version: ["7.2","7.3","8.0","8.1"]
+              test_set: ["knowledge"]
+          filters:
+            branches:
+              only: /.*/
+      - splunk-app-test:
+          context:
+            - gdi-saucelabs
+            - gdi-reportportal
+          requires:
+            - package
+          matrix:
+            parameters:
+              splunk_version: ["7.3","8.0","8.1"]
+              test_set: ["ui-firefox", "ui-chrome", "ui-safari", "ui-edge"]
+          filters:
+            branches:
+              only: /.*/
+      - splunk-app-unit-test:
+          context:
+            - gdi-saucelabs
+            - gdi-reportportal
+          requires:
+            - package
+          matrix:
+            parameters:
+              test_set: ["py2-2.7.17", "py3-3.7.4", "py3-3.7.8"]
           filters:
             branches:
               only: /.*/
