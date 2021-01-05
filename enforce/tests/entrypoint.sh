@@ -29,7 +29,7 @@ then
     pip install -r requirements_py2_dev.txt
     pip install six>=1.15
 else
-    pip install -r requirements_dev.txt --use-deprecated=legacy-resolver --user
+    pip install -r requirements_dev.txt --user
     pip install six>=1.15 --user
     pip install git+https://github.com/rfaircloth-splunk/agent-python-pytest.git --user
 fi
