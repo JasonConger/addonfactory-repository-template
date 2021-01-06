@@ -71,7 +71,6 @@ do
         git submodule add git@github.com:$REPOORG/addonfactory_test_matrix_splunk.git deps/build/addonfactory_test_matrix_splunk
         git submodule add git@github.com:$REPOORG/addonfactory-splunk_sa_cim.git deps/apps/Splunk_SA_CIM
         git submodule add git@github.com:$REPOORG/addonfactory-splunk_env_indexer.git deps/apps/splunk_env_indexer
-        git submodule add git@github.com:$REPOORG/splunk-add-on-for-modinput-test.git deps/apps/splunk-add-on-for-modinput-test
 
         git add .
         git commit -am "base"

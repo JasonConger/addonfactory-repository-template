@@ -221,6 +221,7 @@ jobs:
             pip install git+https://github.com/pixelb/crudini        
             mkdir test-results
             cp -rf /tmp/workspace/* .
+            mkdir -p deps/apps/splunk-add-on-for-modinput-test
             cd deps/apps/splunk-add-on-for-modinput-test
             mkdir output 
             cd output 
