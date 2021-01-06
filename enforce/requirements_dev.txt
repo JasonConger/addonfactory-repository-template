@@ -8,6 +8,7 @@ reuse
 pytest
 https://download.splunk.com/misc/packaging-toolkit/splunk-packaging-toolkit-1.0.1.tar.gz
 pytest-xdist
+pytest-ordering
 pytest-splunk-addon==1.3.12
 pytest-expect
 pytest-splunk-addon-ui-smartx==1.0.0
@@ -16,3 +17,6 @@ mock==3.0.5
 requests
 u-msgpack-python==2.5.0
 six==1.12.0
+coverage==4.0.3
+splunk-sdk
+future
