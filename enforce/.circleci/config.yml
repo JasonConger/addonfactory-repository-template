@@ -221,6 +221,15 @@ jobs:
             pip install git+https://github.com/pixelb/crudini        
             mkdir test-results
             cp -rf /tmp/workspace/* .
+            cd deps/apps/splunk-add-on-for-modinput-test
+            mkdir output 
+            cd output 
+            curl -s https://api.github.com/repos/splunk/splunk-add-on-for-modinput-test/releases/latest | grep "Splunk_TA.*tar.gz" | grep -v search_head | grep -v indexer | grep -v forwarder | cut -d : -f 2,3 | tr -d \" | wget -qi - || true
+            ls
+            tar -xzf *.tar.gz
+            ls
+            rm *.tar.gz
+            ls
       - run:
           name: Splunk Testing
           no_output_timeout: 2h
@@ -258,7 +267,7 @@ jobs:
             docker-compose -f docker-compose-ci.yml build
 
             # Saucelab connection
-            [ -z $BROWSER ] || [ "$UI_TEST_HEADLESS" = "true" ] || docker-compose -f docker-compose-ci.yml up -d sauceconnect 
+            [ -z $BROWSER ] || [ "$UI_TEST_HEADLESS" = "true" ] || docker-compose -f docker-compose-ci.yml up -d sauceconnect
 
             # Start Splunk
             docker-compose -f docker-compose-ci.yml up -d splunk                
@@ -481,6 +490,18 @@ workflows:
             parameters:
               splunk_version: ["7.3","8.0","8.1"]
               test_set: ["ui-firefox", "ui-chrome", "ui-safari", "ui-edge"]
+          filters:
+            branches:
+              only: /.*/
+      - splunk-app-test:
+          context:
+            - gdi-reportportal
+          requires:
+            - package
+          matrix:
+            parameters:
+              splunk_version: ["7.3","8.0","8.1"]
+              test_set: ["modinput_functional", "modinput_others"]
           filters:
             branches:
               only: /.*/

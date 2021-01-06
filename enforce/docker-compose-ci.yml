@@ -35,6 +35,8 @@ services:
     links:
       - splunk
       - sc4s
+      - http_proxy
+      - socks5
     volumes:
       - results:/home/circleci/work
 
@@ -75,6 +77,18 @@ services:
       - SC4S_ARCHIVE_GLOBAL=no
       - SC4S_LISTEN_CHECKPOINT_SPLUNK_NOISE_CONTROL=yes
 
+  socks5:
+    image: serjs/go-socks5-proxy:latest
+    hostname: socks5
+    ports:
+      - "1080"
+    stdin_open: true
+    tty: true
+    links:
+      - splunk
+    environment:
+      - PROXY_USER=splunk_socks5
+      - PROXY_PASSWORD=splunk_socks5
   splunk:
     build:
       context: .
@@ -106,6 +120,18 @@ services:
     hostname: sauceconnect
     ports:
       - "4445"
+  http_proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile-http_proxy
+    hostname: http_proxy
+    ports:
+      - "3128"
+    stdin_open: true
+    environment:
+      - PROXY_USERNAME=user1
+      - PROXY_PASSWORD=123456
+    tty: true
 
 volumes:
   results:

@@ -13,3 +13,6 @@ pytest-expect
 pytest-splunk-addon-ui-smartx==1.0.0
 pytest-rerunfailures
 mock==3.0.5
+requests
+u-msgpack-python==2.5.0
+six==1.12.0
