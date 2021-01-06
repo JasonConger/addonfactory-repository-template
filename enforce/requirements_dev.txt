@@ -11,7 +11,7 @@ pytest-xdist
 pytest-ordering
 pytest-splunk-addon==1.4.0
 pytest-expect
-pytest-splunk-addon-ui-smartx==1.0.0
+pytest-splunk-addon-ui-smartx==1.1.0
 pytest-rerunfailures
 mock==3.0.5
 requests
